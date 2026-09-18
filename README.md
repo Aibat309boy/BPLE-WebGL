@@ -1,6 +1,7 @@
 # BPLE WebGL Decompilation
 
-[BPLE](./bple%20title.png)
+
+[![BPLE](./bple%20title.png)
 
 ## How To Build
 
