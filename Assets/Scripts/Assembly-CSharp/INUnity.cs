@@ -1,0 +1,166 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using UnityEngine;
+
+public static class INUnity
+{
+	public enum VersionType
+	{
+		Original = 0,
+		ModeO = 1,
+		ModeA = 2,
+		ModeB = 3
+	}
+
+	private static Dictionary<(string, string), UnityEngine.Object> s_resources;
+
+	public static bool Enabled => true;
+
+	public static Version Version { get; private set; }
+
+	public static string VersionText { get; private set; }
+
+	public static int BuildVersion { get; private set; }
+
+	public static string DataPath { get; private set; }
+
+	public static string SettingsPath { get; private set; }
+
+	public static SystemLanguage Language { get; private set; }
+
+	public static Font ArialFont { get; private set; }
+
+	public static Mesh QuadMesh { get; private set; }
+
+	public static Shader ColorShader { get; private set; }
+
+	public static Shader ColorTransparentShader { get; private set; }
+
+	public static Shader CustomTransparentShader { get; private set; }
+
+	static INUnity()
+	{
+		VersionText = string.IsNullOrEmpty(Application.version) ? "0.0.0" : Application.version;
+		string[] array = VersionText.Split('-', 2);
+		Version = Version.TryParse(array[0], out Version parsedVersion) ? parsedVersion : new Version(0, 0, 0);
+		BuildVersion = -1;
+		if (array.Length > 1)
+		{
+			string buildToken = array[1].Trim();
+			for (int i = 0; i < buildToken.Length; i++)
+			{
+				if (char.IsDigit(buildToken[i]))
+				{
+					string digits = buildToken.Substring(i);
+					int index = digits.IndexOfAny(new[] { ' ', '-', '_', '.', '/', '\\' });
+					if (index >= 0)
+					{
+						digits = digits.Substring(0, index);
+					}
+					if (int.TryParse(digits, NumberStyles.Integer, CultureInfo.InvariantCulture, out int buildNumber))
+					{
+						BuildVersion = buildNumber;
+					}
+					break;
+				}
+			}
+		}
+		SystemLanguage systemLanguage = Application.systemLanguage;
+		if (systemLanguage == SystemLanguage.Chinese || systemLanguage == SystemLanguage.ChineseSimplified || systemLanguage == SystemLanguage.ChineseTraditional)
+		{
+			Language = SystemLanguage.Chinese;
+		}
+		else
+		{
+			Language = SystemLanguage.English;
+		}
+		ArialFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+		QuadMesh = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
+		s_resources = new Dictionary<(string, string), UnityEngine.Object>();
+	}
+
+	public static void InitializeRoot()
+	{
+		DataPath = INFileSystem.Root;
+		SettingsPath = Path.Combine(DataPath, "Settings");
+	}
+
+	public static void Initialize(ResourceData data)
+	{
+		InitializeResources("GameObject", data.Prefabs);
+		InitializeResources("Font", data.Fonts);
+		InitializeResources("Texture", data.Textures);
+		InitializeResources("Shader", data.Shaders);
+		InitializeResources("Material", data.Materials);
+		InitializeResources("TextAsset", data.TextAssets);
+		InitializeResources("ScriptableObject", data.ScriptableObjects);
+		ColorShader = LoadShader("Unlit_Color");
+		ColorTransparentShader = LoadShader("Unlit_ColorTransparent");
+		CustomTransparentShader = LoadShader("PreAlpha_Unlit_ColorTransparent_Geometry");
+	}
+
+	private static void InitializeResources<T>(string typeName, List<T> data) where T : UnityEngine.Object
+	{
+		foreach (T datum in data)
+		{
+			s_resources.Add((typeName, GetName(datum)), datum);
+		}
+	}
+
+	private static string GetName(UnityEngine.Object obj)
+	{
+		string name = obj.name;
+		if (obj is Shader)
+		{
+			int num = name.LastIndexOf('/');
+			if (num != -1)
+			{
+				return name.Substring(num + 1);
+			}
+			return name;
+		}
+		return name;
+	}
+
+	public static Font LoadFont(string name)
+	{
+		return LoadObject<Font>("Font", name);
+	}
+
+	public static GameObject LoadGameObject(string name)
+	{
+		return LoadObject<GameObject>("GameObject", name);
+	}
+
+	public static Texture LoadTexture(string name)
+	{
+		return LoadObject<Texture>("Texture", name);
+	}
+
+	public static Material LoadMaterial(string name)
+	{
+		return LoadObject<Material>("Material", name);
+	}
+
+	public static Shader LoadShader(string name)
+	{
+		return LoadObject<Shader>("Shader", name);
+	}
+
+	public static TextAsset LoadTextAsset(string name)
+	{
+		return LoadObject<TextAsset>("TextAsset", name);
+	}
+
+	public static T LoadScriptableObject<T>(string name) where T : ScriptableObject
+	{
+		return LoadObject<T>("ScriptableObject", name);
+	}
+
+	private static T LoadObject<T>(string typeName, string name) where T : UnityEngine.Object
+	{
+		return (T)s_resources[(typeName, name)];
+	}
+}
