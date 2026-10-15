@@ -1,4 +1,4 @@
-# BPLE WebGL Decompilation
+# BPLE WebGL Project
 
 
 ![BPLE](./bple%20title.png)
