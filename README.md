@@ -15,9 +15,11 @@
 
 - open unity hub then import this port
 
+- BPLE > build or bundle > WebGL
+
 - enjoy :)
 
-but too much pop up
+but too much pop up maybe try `BPLE > Build > WebGL`
     
  ## credit port
 
