@@ -7,7 +7,7 @@
 1. Install [Unity Hub](https://docs.unity.com/en-us/hub/install-hub-win-mac)  
 2. Install [Unity 2021.3.45f2](https://unity.com/releases/editor/whats-new/2021.3.45f2) (installing Editor in Unity Hub is recommended)  
 3. install [Git](https://git-scm.com/install/) then open `Git Bash`  
-4. Type `git clone https://github.com/Aibat309boy/BPLE-WebGL.git` in your Git Bash terminal and hit enter
+4. Type `git clone https://github.com/Aibat309boy/BPLE-WebGL.git` in your Git Bash terminal and hit enter  
    <img width="568" height="172" alt="image" src="https://github.com/user-attachments/assets/368f5fa7-fa79-4e37-b2a4-99ebc90f180b" />  
 5. Add the project's root directory in Unity Hub via this button:
    <img width="444" height="150" alt="image" src="https://github.com/user-attachments/assets/8cb97087-68b7-4111-b956-22aaf8ecee60" />  
