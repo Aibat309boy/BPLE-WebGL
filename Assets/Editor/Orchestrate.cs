@@ -35,10 +35,6 @@ public static class Orchestrate
 	{
 		return platform switch
 		{
-			// Platform.WindowsX32 => BuildTarget.StandaloneWindows,
-			// Platform.WindowsX64 => BuildTarget.StandaloneWindows64,
-			// Platform.LinuxX64 => BuildTarget.StandaloneLinux64,
-			// Platform.AndroidArm or Platform.AndroidIntel => BuildTarget.Android,
 			Platform.WebGL => BuildTarget.WebGL,
 			_ => throw new ArgumentOutOfRangeException(nameof(platform), platform, "Unsupported target")
 		};
@@ -48,9 +44,6 @@ public static class Orchestrate
 	{
 		return platform switch
 		{
-			Platform.WindowsX32 or Platform.WindowsX64 => $"BPLE-{PlayerSettings.bundleVersion}.exe",
-			Platform.LinuxX64 => $"BPLE-{PlayerSettings.bundleVersion}.x86_64",
-			Platform.AndroidArm or Platform.AndroidIntel => $"BPLE-{PlayerSettings.bundleVersion}.apk",
 			Platform.WebGL => $"BPLE-{PlayerSettings.bundleVersion}",
 			_ => null,
 		};
@@ -301,16 +294,6 @@ public static class Orchestrate
 		{
 			PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
 			PlayerSettings.WebGL.decompressionFallback = true;
-		}
-
-		switch (platform)
-		{
-			case Platform.AndroidArm:
-				PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64;
-				break;
-			case Platform.AndroidIntel:
-				PlayerSettings.Android.targetArchitectures = AndroidArchitecture.X86 | AndroidArchitecture.X86_64;
-				break;
 		}
 
 		BuildReport report = BuildPipeline.BuildPlayer(options);
